@@ -13,21 +13,24 @@ class ImageViewer : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     ImageViewer();
     bool loadFile(const QString &);
 
-private slots:
+  private slots:
     void open();
+
     void zoomIn();
     void zoomOut();
     void normalSize();
     void fitToWindow();
 
-private:
+	void scrollRight();
+	void scrollLeft();
+
+  private:
     void createActions();
     void createMenus();
-    void updateActions();
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
@@ -41,6 +44,8 @@ private:
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
+	QAction *scrollRightAct;
+	QAction *scrollLeftAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;

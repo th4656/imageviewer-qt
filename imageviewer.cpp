@@ -1,5 +1,8 @@
 #include <QtWidgets>
 
+//TODO: better scrolling with arrow keys
+//TODO: Hide scrollbars completely
+
 #include "imageviewer.h"
 
 ImageViewer::ImageViewer()
@@ -37,10 +40,8 @@ bool ImageViewer::loadFile(const QString &fileName)
     scaleFactor = 1.0;
 
     fitToWindowAct->setEnabled(true);
-    updateActions();
 
-    if (!fitToWindowAct->isChecked())
-        imageLabel->adjustSize();
+    fitToWindow();
 
     setWindowFilePath(fileName);
     return true;
@@ -68,9 +69,9 @@ void ImageViewer::open()
     }
 }
 
-void ImageViewer::zoomIn() { scaleImage(1.25); }
+void ImageViewer::zoomIn() { scaleImage(1.05); }
 
-void ImageViewer::zoomOut() { scaleImage(0.8); }
+void ImageViewer::zoomOut() { scaleImage(0.95); }
 
 void ImageViewer::normalSize()
 {
@@ -80,14 +81,11 @@ void ImageViewer::normalSize()
 
 void ImageViewer::fitToWindow()
 {
-    bool fitToWindow = fitToWindowAct->isChecked();
-    scrollArea->setWidgetResizable(fitToWindow);
-    if (!fitToWindow)
-    {
-        normalSize();
-    }
-    updateActions();
+    normalSize(); // make this actually fit to window
 }
+
+void ImageViewer::scrollRight() { scrollArea->scroll(5, 0); }
+void ImageViewer::scrollLeft() { scrollArea->scroll(-5, 0); }
 
 void ImageViewer::createActions()
 {
@@ -99,40 +97,47 @@ void ImageViewer::createActions()
     exitAct->setShortcut(tr("q"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    zoomInAct = new QAction(tr("Zoom &In (25%)"), this);
-    zoomInAct->setShortcut(tr("+"));
-    zoomInAct->setEnabled(false);
+    zoomInAct = new QAction(tr("Zoom &In (5%)"), this);
+    zoomInAct->setShortcut(tr("z"));
+    zoomInAct->setEnabled(true);
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-    zoomOutAct = new QAction(tr("Zoom &Out (25%)"), this);
-    zoomOutAct->setShortcut(tr("-"));
-    zoomOutAct->setEnabled(false);
+    zoomOutAct = new QAction(tr("Zoom &Out (5%)"), this);
+    zoomOutAct->setShortcut(tr("Shift+z"));
+    zoomOutAct->setEnabled(true);
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
     normalSizeAct = new QAction(tr("&Normal Size"), this);
     normalSizeAct->setShortcut(tr("="));
-    normalSizeAct->setEnabled(false);
+    normalSizeAct->setEnabled(true);
     connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
 
     fitToWindowAct = new QAction(tr("&Fit to Window"), this);
-    fitToWindowAct->setEnabled(false);
-    fitToWindowAct->setCheckable(true);
+    fitToWindowAct->setEnabled(true);
     fitToWindowAct->setShortcut(tr("f"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+
+    scrollRightAct = new QAction(tr("Scroll Right"), this);
+    scrollRightAct->setEnabled(true);
+    scrollRightAct->setShortcut(tr("l"));
+    connect(scrollRightAct, SIGNAL(triggered()), this, SLOT(scrollRight()));
+
+    scrollLeftAct = new QAction(tr("Scroll Left"), this);
+    scrollLeftAct->setEnabled(true);
+    scrollLeftAct->setShortcut(tr("h"));
+    connect(scrollLeftAct, SIGNAL(triggered()), this, SLOT(scrollLeft()));
 }
 
 void ImageViewer::createMenus()
 {
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAct);
-    fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
     viewMenu = new QMenu(tr("&View"), this);
     viewMenu->addAction(zoomInAct);
     viewMenu->addAction(zoomOutAct);
     viewMenu->addAction(normalSizeAct);
-    viewMenu->addSeparator();
     viewMenu->addAction(fitToWindowAct);
 
     helpMenu = new QMenu(tr("&Help"), this);
@@ -140,13 +145,20 @@ void ImageViewer::createMenus()
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(viewMenu);
     menuBar()->addMenu(helpMenu);
-}
 
-void ImageViewer::updateActions()
-{
-    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
-    normalSizeAct->setEnabled(!fitToWindowAct->isChecked());
+    scrollArea->addAction(openAct);
+    scrollArea->addAction(exitAct);
+    scrollArea->addAction(zoomInAct);
+    scrollArea->addAction(zoomOutAct);
+    scrollArea->addAction(normalSizeAct);
+    scrollArea->addAction(fitToWindowAct);
+    scrollArea->addAction(scrollRightAct);
+    scrollArea->addAction(scrollLeftAct);
+
+    scrollArea->horizontalScrollBar()->setDisabled(true);
+    scrollArea->verticalScrollBar()->setDisabled(true);
+	scrollArea->horizontalScrollBar()->setHidden(true);
+	scrollArea->verticalScrollBar()->setHidden(true);
 }
 
 void ImageViewer::scaleImage(double factor)
@@ -157,9 +169,6 @@ void ImageViewer::scaleImage(double factor)
 
     adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
     adjustScrollBar(scrollArea->verticalScrollBar(), factor);
-
-    zoomInAct->setEnabled(scaleFactor < 3.0);
-    zoomOutAct->setEnabled(scaleFactor > 0.333);
 }
 
 void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
