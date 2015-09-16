@@ -1,6 +1,4 @@
 #include <QtWidgets>
-#include <kfiledialog.h>
-#include <kstandarddirs.h>
 
 #include "imageviewer.h"
 
@@ -54,8 +52,15 @@ void ImageViewer::open()
     foreach (const QByteArray &mimeTypeName, QImageReader::supportedMimeTypes())
         mimeTypeFilters.append(mimeTypeName);
     mimeTypeFilters.sort();
-	KFileDialog::KFileDialog dialog(KUrl("kfiledialog:///<keyword>"), QString("image/png"), this);
-	dialog.setMimeFilter(mimeTypeFilters);
+
+    const QStringList homeLocations =
+        QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+    QFileDialog dialog(this, tr("Open File"), homeLocations.isEmpty()
+                                                  ? QDir::currentPath()
+                                                  : homeLocations.first());
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setMimeTypeFilters(mimeTypeFilters);
+    dialog.selectMimeTypeFilter("image/png");
 
     while (dialog.exec() == QDialog::Accepted &&
            !loadFile(dialog.selectedFiles().first()))
