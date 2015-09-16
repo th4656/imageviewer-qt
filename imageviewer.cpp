@@ -1,5 +1,11 @@
 #include <QtWidgets>
 
+//TODO: Load next and move to next image with left/right and scroll
+//TODO: Change mappings for zoom to up/down and scroll to hjkl
+//TODO: Preview images by holding shift
+//TODO: PNG transparency
+//TODO: Handle gifs
+
 #include "imageviewer.h"
 
 ImageViewer::ImageViewer()
