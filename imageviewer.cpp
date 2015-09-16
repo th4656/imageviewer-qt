@@ -1,10 +1,13 @@
 #include <QtWidgets>
 
+//TODO: Fit to window
+//TODO: Rotate
+//TODO: Handle gifs
+	//Do this with QMovie I think
 //TODO: Load next and move to next image with left/right and scroll
 //TODO: Change mappings for zoom to up/down and scroll to hjkl
 //TODO: Preview images by holding shift
 //TODO: PNG transparency
-//TODO: Handle gifs
 
 #include "imageviewer.h"
 
@@ -135,11 +138,8 @@ void ImageViewer::createMenus()
     viewMenu->addAction(normalSizeAct);
     viewMenu->addAction(fitToWindowAct);
 
-    helpMenu = new QMenu(tr("&Help"), this);
-
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(viewMenu);
-    menuBar()->addMenu(helpMenu);
 
     scrollArea->addAction(openAct);
     scrollArea->addAction(exitAct);

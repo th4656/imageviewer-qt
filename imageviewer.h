@@ -44,7 +44,6 @@ class ImageViewer : public QMainWindow
 
     QMenu *fileMenu;
     QMenu *viewMenu;
-    QMenu *helpMenu;
 };
 
 #endif
