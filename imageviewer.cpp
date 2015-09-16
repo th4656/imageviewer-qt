@@ -1,8 +1,5 @@
 #include <QtWidgets>
 
-//TODO: better scrolling with arrow keys
-//TODO: Hide scrollbars completely
-
 #include "imageviewer.h"
 
 ImageViewer::ImageViewer()
@@ -15,6 +12,10 @@ ImageViewer::ImageViewer()
     scrollArea = new QScrollArea;
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
+    scrollArea->verticalScrollBar()->setFocusPolicy(Qt::ClickFocus);
+    scrollArea->horizontalScrollBar()->setFocusPolicy(Qt::ClickFocus);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setCentralWidget(scrollArea);
 
     createActions();
@@ -84,9 +85,6 @@ void ImageViewer::fitToWindow()
     normalSize(); // make this actually fit to window
 }
 
-void ImageViewer::scrollRight() { scrollArea->scroll(5, 0); }
-void ImageViewer::scrollLeft() { scrollArea->scroll(-5, 0); }
-
 void ImageViewer::createActions()
 {
     openAct = new QAction(tr("&Open..."), this);
@@ -117,15 +115,6 @@ void ImageViewer::createActions()
     fitToWindowAct->setShortcut(tr("f"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
 
-    scrollRightAct = new QAction(tr("Scroll Right"), this);
-    scrollRightAct->setEnabled(true);
-    scrollRightAct->setShortcut(tr("l"));
-    connect(scrollRightAct, SIGNAL(triggered()), this, SLOT(scrollRight()));
-
-    scrollLeftAct = new QAction(tr("Scroll Left"), this);
-    scrollLeftAct->setEnabled(true);
-    scrollLeftAct->setShortcut(tr("h"));
-    connect(scrollLeftAct, SIGNAL(triggered()), this, SLOT(scrollLeft()));
 }
 
 void ImageViewer::createMenus()
@@ -152,13 +141,6 @@ void ImageViewer::createMenus()
     scrollArea->addAction(zoomOutAct);
     scrollArea->addAction(normalSizeAct);
     scrollArea->addAction(fitToWindowAct);
-    scrollArea->addAction(scrollRightAct);
-    scrollArea->addAction(scrollLeftAct);
-
-    scrollArea->horizontalScrollBar()->setDisabled(true);
-    scrollArea->verticalScrollBar()->setDisabled(true);
-	scrollArea->horizontalScrollBar()->setHidden(true);
-	scrollArea->verticalScrollBar()->setHidden(true);
 }
 
 void ImageViewer::scaleImage(double factor)

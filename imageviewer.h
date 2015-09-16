@@ -25,9 +25,6 @@ class ImageViewer : public QMainWindow
     void normalSize();
     void fitToWindow();
 
-	void scrollRight();
-	void scrollLeft();
-
   private:
     void createActions();
     void createMenus();
@@ -44,8 +41,6 @@ class ImageViewer : public QMainWindow
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
-	QAction *scrollRightAct;
-	QAction *scrollLeftAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;
