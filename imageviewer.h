@@ -25,6 +25,9 @@ class ImageViewer : public QMainWindow
     void normalSize();
     void fitToWindow();
 
+    void rotateClockWise();
+    void rotateCounterClockWise();
+
   private:
     void createActions();
     void createMenus();
@@ -41,6 +44,10 @@ class ImageViewer : public QMainWindow
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
+	QAction *rotateClockWiseAct;
+	QAction *rotateCounterClockWiseAct;
+
+	double _imageWindowRatio;
 
     QMenu *fileMenu;
     QMenu *viewMenu;

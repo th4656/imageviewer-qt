@@ -91,26 +91,41 @@ void ImageViewer::normalSize()
 
 void ImageViewer::fitToWindow()
 {
-	normalSize();
-    scaleImage(this->height() / (double)imageLabel->height());
+    normalSize();
+    _imageWindowRatio = this->height() / (double)imageLabel->height();
+    scaleImage(_imageWindowRatio);
+}
+
+void ImageViewer::rotateClockWise()
+{
+    imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(90)));
+    zoomIn();  // Image dimensions get messed up when rotating
+    zoomOut(); // I should probably find a better solution
+}
+
+void ImageViewer::rotateCounterClockWise()
+{
+    imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(-90)));
+    zoomIn();  // Image dimensions get messed up when rotating
+    zoomOut(); // I should probably find a better solution
 }
 
 void ImageViewer::createActions()
 {
-    openAct = new QAction(tr("&Open..."), this);
+    openAct = new QAction(tr("Open..."), this);
     openAct->setShortcut(tr("o"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-    exitAct = new QAction(tr("E&xit"), this);
+    exitAct = new QAction(tr("Exit"), this);
     exitAct->setShortcut(tr("q"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    zoomInAct = new QAction(tr("Zoom &In (5%)"), this);
+    zoomInAct = new QAction(tr("Zoom In 5%"), this);
     zoomInAct->setShortcut(tr("z"));
     zoomInAct->setEnabled(true);
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-    zoomOutAct = new QAction(tr("Zoom &Out (5%)"), this);
+    zoomOutAct = new QAction(tr("Zoom Out 5%"), this);
     zoomOutAct->setShortcut(tr("Shift+z"));
     zoomOutAct->setEnabled(true);
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -124,6 +139,17 @@ void ImageViewer::createActions()
     fitToWindowAct->setEnabled(true);
     fitToWindowAct->setShortcut(tr("f"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+
+    rotateClockWiseAct = new QAction(tr("Rotate Clock Wise"), this);
+    rotateClockWiseAct->setEnabled(true);
+    rotateClockWiseAct->setShortcut(tr("r"));
+    connect(rotateClockWiseAct, SIGNAL(triggered()), this, SLOT(rotateClockWise()));
+
+    rotateCounterClockWiseAct = new QAction(tr("Rotate Counter Cock Wise"), this);
+    rotateCounterClockWiseAct->setEnabled(true);
+    rotateCounterClockWiseAct->setShortcut(tr("Shift+r"));
+    connect(rotateCounterClockWiseAct, SIGNAL(triggered()), this,
+            SLOT(rotateCounterClockWise()));
 }
 
 void ImageViewer::createMenus()
@@ -137,6 +163,9 @@ void ImageViewer::createMenus()
     viewMenu->addAction(zoomOutAct);
     viewMenu->addAction(normalSizeAct);
     viewMenu->addAction(fitToWindowAct);
+    viewMenu->addSeparator();
+    viewMenu->addAction(rotateClockWiseAct);
+    viewMenu->addAction(rotateCounterClockWiseAct);
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(viewMenu);
@@ -147,6 +176,8 @@ void ImageViewer::createMenus()
     scrollArea->addAction(zoomOutAct);
     scrollArea->addAction(normalSizeAct);
     scrollArea->addAction(fitToWindowAct);
+    scrollArea->addAction(rotateClockWiseAct);
+    scrollArea->addAction(rotateCounterClockWiseAct);
 }
 
 void ImageViewer::scaleImage(double factor)
