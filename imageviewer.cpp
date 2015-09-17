@@ -1,13 +1,13 @@
 #include <QtWidgets>
+#include <iostream>
 
-//TODO: Fit to window
-//TODO: Rotate
-//TODO: Handle gifs
-	//Do this with QMovie I think
-//TODO: Load next and move to next image with left/right and scroll
-//TODO: Change mappings for zoom to up/down and scroll to hjkl
-//TODO: Preview images by holding shift
-//TODO: PNG transparency
+// TODO: Rotate
+// TODO: Handle gifs
+// Do this with QMovie I think
+// TODO: Load next and move to next image with left/right and scroll
+// TODO: Change mappings for zoom to up/down and scroll to hjkl
+// TODO: Preview images by holding shift
+// TODO: PNG transparency
 
 #include "imageviewer.h"
 
@@ -91,7 +91,8 @@ void ImageViewer::normalSize()
 
 void ImageViewer::fitToWindow()
 {
-    normalSize(); // make this actually fit to window
+	normalSize();
+    scaleImage(this->height() / (double)imageLabel->height());
 }
 
 void ImageViewer::createActions()
@@ -123,7 +124,6 @@ void ImageViewer::createActions()
     fitToWindowAct->setEnabled(true);
     fitToWindowAct->setShortcut(tr("f"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
-
 }
 
 void ImageViewer::createMenus()
