@@ -1,25 +1,23 @@
 #include <QtWidgets>
+#include <cstdio>
 #include <iostream>
 
-// TODO: Rotate
-// TODO: Handle gifs
-// Do this with QMovie I think
-// TODO: Load next and move to next image with left/right and scroll
-// TODO: Change mappings for zoom to up/down and scroll to hjkl
 // TODO: Preview images by holding shift
 // TODO: PNG transparency
+// TODO: Load next and move to next image with left/right and scroll
+// TODO: Change mappings for zoom to up/down and scroll to hjkl
 
 #include "imageviewer.h"
 
 ImageViewer::ImageViewer()
 {
     imageLabel = new QLabel;
-    imageLabel->setBackgroundRole(QPalette::Base);
+    imageLabel->setBackgroundRole(QPalette::Background);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
 
     scrollArea = new QScrollArea;
-    scrollArea->setBackgroundRole(QPalette::Dark);
+    scrollArea->setBackgroundRole(QPalette::Background);
     scrollArea->setWidget(imageLabel);
     scrollArea->verticalScrollBar()->setFocusPolicy(Qt::ClickFocus);
     scrollArea->horizontalScrollBar()->setFocusPolicy(Qt::ClickFocus);
@@ -46,7 +44,20 @@ bool ImageViewer::loadFile(const QString &fileName)
         imageLabel->adjustSize();
         return false;
     }
-    imageLabel->setPixmap(QPixmap::fromImage(image));
+
+    if (QMimeDatabase().mimeTypeForFile(fileName).name().toStdString() == "image/gif")
+    {
+        QMovie *gif = new QMovie(fileName);
+        imageLabel->setMovie(gif);
+        _sizeOfGif = image.size();
+        imageLabel->movie()->setScaledSize(_sizeOfGif);
+        gif->start();
+    }
+    else
+    {
+        imageLabel->setPixmap(QPixmap::fromImage(image));
+    }
+
     scaleFactor = 1.0;
 
     fitToWindowAct->setEnabled(true);
@@ -79,9 +90,9 @@ void ImageViewer::open()
     }
 }
 
-void ImageViewer::zoomIn() { scaleImage(1.05); }
+void ImageViewer::zoomIn() { scaleContent(1.05); }
 
-void ImageViewer::zoomOut() { scaleImage(0.95); }
+void ImageViewer::zoomOut() { scaleContent(0.95); }
 
 void ImageViewer::normalSize()
 {
@@ -92,8 +103,7 @@ void ImageViewer::normalSize()
 void ImageViewer::fitToWindow()
 {
     normalSize();
-    _imageWindowRatio = this->height() / (double)imageLabel->height();
-    scaleImage(_imageWindowRatio);
+    imageLabel->resize(this->size());
 }
 
 void ImageViewer::rotateClockWise()
@@ -180,12 +190,20 @@ void ImageViewer::createMenus()
     scrollArea->addAction(rotateCounterClockWiseAct);
 }
 
-void ImageViewer::scaleImage(double factor)
+void ImageViewer::scaleContent(double factor)
 {
-    Q_ASSERT(imageLabel->pixmap());
-    scaleFactor *= factor;
-    imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-
+    if (imageLabel->movie() != nullptr)
+    {
+        Q_ASSERT(imageLabel->movie());
+        scaleFactor *= factor;
+        imageLabel->resize(scaleFactor * imageLabel->movie()->scaledSize());
+    }
+    else if (imageLabel->pixmap() != nullptr)
+    {
+        Q_ASSERT(imageLabel->pixmap());
+        scaleFactor *= factor;
+        imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
+    }
     adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
     adjustScrollBar(scrollArea->verticalScrollBar(), factor);
 }

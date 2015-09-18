@@ -31,7 +31,7 @@ class ImageViewer : public QMainWindow
   private:
     void createActions();
     void createMenus();
-    void scaleImage(double factor);
+    void scaleContent(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
     QLabel *imageLabel;
@@ -44,13 +44,13 @@ class ImageViewer : public QMainWindow
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
-	QAction *rotateClockWiseAct;
-	QAction *rotateCounterClockWiseAct;
-
-	double _imageWindowRatio;
+    QAction *rotateClockWiseAct;
+    QAction *rotateCounterClockWiseAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;
+
+    QSize _sizeOfGif; //since i don't know how to get a QMovie size i'll take it from a frame
 };
 
 #endif
