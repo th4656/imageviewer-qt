@@ -52,16 +52,18 @@ bool ImageViewer::loadFile(const QString &fileName)
         _sizeOfGif = image.size();
         imageLabel->movie()->setScaledSize(_sizeOfGif);
         gif->start();
+
+        rotateClockWiseAct->setEnabled(false);
+        rotateCounterClockWiseAct->setEnabled(false);
     }
     else
     {
         imageLabel->setPixmap(QPixmap::fromImage(image));
+        rotateClockWiseAct->setEnabled(true);
+        rotateCounterClockWiseAct->setEnabled(true);
     }
 
     scaleFactor = 1.0;
-
-    fitToWindowAct->setEnabled(true);
-
     fitToWindow();
 
     setWindowFilePath(fileName);
@@ -108,16 +110,23 @@ void ImageViewer::fitToWindow()
 
 void ImageViewer::rotateClockWise()
 {
-    imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(90)));
-    zoomIn();  // Image dimensions get messed up when rotating
-    zoomOut(); // I should probably find a better solution
+    if (imageLabel->pixmap() != nullptr)
+    {
+        imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(90)));
+        zoomIn();  // Image dimensions get messed up when rotating
+        zoomOut(); // I should probably find a better solution
+    }
 }
 
 void ImageViewer::rotateCounterClockWise()
 {
-    imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(-90)));
-    zoomIn();  // Image dimensions get messed up when rotating
-    zoomOut(); // I should probably find a better solution
+    if (imageLabel->pixmap() != nullptr)
+    {
+        imageLabel->setPixmap(
+            imageLabel->pixmap()->transformed(QTransform().rotate(-90)));
+        zoomIn();  // Image dimensions get messed up when rotating
+        zoomOut(); // I should probably find a better solution
+    }
 }
 
 void ImageViewer::createActions()
@@ -151,12 +160,10 @@ void ImageViewer::createActions()
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
 
     rotateClockWiseAct = new QAction(tr("Rotate Clock Wise"), this);
-    rotateClockWiseAct->setEnabled(true);
     rotateClockWiseAct->setShortcut(tr("r"));
     connect(rotateClockWiseAct, SIGNAL(triggered()), this, SLOT(rotateClockWise()));
 
     rotateCounterClockWiseAct = new QAction(tr("Rotate Counter Cock Wise"), this);
-    rotateCounterClockWiseAct->setEnabled(true);
     rotateCounterClockWiseAct->setShortcut(tr("Shift+r"));
     connect(rotateCounterClockWiseAct, SIGNAL(triggered()), this,
             SLOT(rotateCounterClockWise()));
