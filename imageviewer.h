@@ -2,6 +2,7 @@
 #define IMAGEVIEWER_H
 
 #include <QMainWindow>
+#include <QDir>
 
 class QAction;
 class QLabel;
@@ -50,7 +51,9 @@ class ImageViewer : public QMainWindow
     QMenu *fileMenu;
     QMenu *viewMenu;
 
-    QSize _sizeOfGif; //since i don't know how to get a QMovie size i'll take it from a frame
+    QDir _dir; // not sure how I'm supposed to do this
+    QSize _sizeOfGif; // since i don't know how to get a QMovie size i'll take it from a
+                      // frame
 };
 
 #endif

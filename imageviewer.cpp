@@ -2,9 +2,12 @@
 #include <cstdio>
 #include <iostream>
 
+// TODO: Load next and move to next image with left/right and scroll
+// Idea
+// Get all image names in directory and store in vector
+// map right/left to get index+1 w/ wraparound and callload with that
 // TODO: Preview images by holding shift
 // TODO: PNG transparency
-// TODO: Load next and move to next image with left/right and scroll
 // TODO: Change mappings for zoom to up/down and scroll to hjkl
 
 #include "imageviewer.h"
@@ -24,6 +27,8 @@ ImageViewer::ImageViewer()
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setCentralWidget(scrollArea);
+
+    _dir.cd(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
 
     createActions();
     createMenus();
@@ -67,6 +72,9 @@ bool ImageViewer::loadFile(const QString &fileName)
     fitToWindow();
 
     setWindowFilePath(fileName);
+
+    _dir.cd(fileName.left(fileName.lastIndexOf("/") + 1));
+
     return true;
 }
 
@@ -79,9 +87,8 @@ void ImageViewer::open()
 
     const QStringList homeLocations =
         QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
-    QFileDialog dialog(this, tr("Open File"), homeLocations.isEmpty()
-                                                  ? QDir::currentPath()
-                                                  : homeLocations.first());
+    QFileDialog dialog(this, tr("Open File"), _dir.path());
+
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setMimeTypeFilters(mimeTypeFilters);
     dialog.selectMimeTypeFilter("image/png");
