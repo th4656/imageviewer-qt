@@ -2,13 +2,11 @@
 #include <cstdio>
 #include <iostream>
 
-// TODO: Load next and move to next image with left/right and scroll
-// Idea
-// Get all image names in directory and store in vector
-// map right/left to get index+1 w/ wraparound and callload with that
-// TODO: Preview images by holding shift
+// TODO: Fit window to picture
 // TODO: PNG transparency
+// TODO: Preview images by holding shift
 // TODO: Change mappings for zoom to up/down and scroll to hjkl
+// TODO: speedup loading next/prev if possible and map to left/right and mous scroll
 
 #include "imageviewer.h"
 
@@ -28,10 +26,18 @@ ImageViewer::ImageViewer()
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setCentralWidget(scrollArea);
 
+    QStringList filter;
+    foreach (const QByteArray &imageformat, QImageReader::supportedImageFormats())
+        filter.append("*." + imageformat);
+
+    _dir.setNameFilters(filter);
     _dir.cd(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
+    _dir.setFilter(QDir::Files);
 
     createActions();
     createMenus();
+
+    _indexOfCurrent = 0;
 
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 }
@@ -68,12 +74,20 @@ bool ImageViewer::loadFile(const QString &fileName)
         rotateCounterClockWiseAct->setEnabled(true);
     }
 
-    scaleFactor = 1.0;
-    fitToWindow();
+    normalSize();
+    if (imageLabel->size().width() > 1920)
+    {
+        fitToWindow();
+    }
 
     setWindowFilePath(fileName);
 
-    _dir.cd(fileName.left(fileName.lastIndexOf("/") + 1));
+    if (QDir::currentPath() != _dir.currentPath() || _otherPictures.isEmpty())
+    {
+        _dir.cd(fileName.left(fileName.lastIndexOf("/") + 1));
+        std::cout << "New Directory" << std::endl;
+        _otherPictures = _dir.entryList();
+    }
 
     return true;
 }
@@ -136,6 +150,30 @@ void ImageViewer::rotateCounterClockWise()
     }
 }
 
+void ImageViewer::loadNext()
+{
+    if (++_indexOfCurrent >= _otherPictures.size())
+    {
+        _indexOfCurrent = 0;
+    }
+
+    // for (auto i : _otherPictures)
+    // {
+    //     std::cout << i.toStdString() << std::endl;
+    // }
+    loadFile(_dir.absoluteFilePath(_otherPictures[_indexOfCurrent]));
+}
+
+void ImageViewer::loadPrev()
+{
+    if (--_indexOfCurrent < 0)
+    {
+        _indexOfCurrent = _otherPictures.size() - 1;
+    }
+
+    loadFile(_dir.absoluteFilePath(_otherPictures[_indexOfCurrent]));
+}
+
 void ImageViewer::createActions()
 {
     openAct = new QAction(tr("Open..."), this);
@@ -174,12 +212,22 @@ void ImageViewer::createActions()
     rotateCounterClockWiseAct->setShortcut(tr("Shift+r"));
     connect(rotateCounterClockWiseAct, SIGNAL(triggered()), this,
             SLOT(rotateCounterClockWise()));
+
+    loadNextAct = new QAction(tr("Next Image"), this);
+    loadNextAct->setShortcut(tr("n"));
+    connect(loadNextAct, SIGNAL(triggered()), this, SLOT(loadNext()));
+
+    loadPrevAct = new QAction(tr("Previous Image"), this);
+    loadPrevAct->setShortcut(tr("Shift+n"));
+    connect(loadPrevAct, SIGNAL(triggered()), this, SLOT(loadPrev()));
 }
 
 void ImageViewer::createMenus()
 {
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAct);
+    fileMenu->addAction(loadNextAct);
+    fileMenu->addAction(loadPrevAct);
     fileMenu->addAction(exitAct);
 
     viewMenu = new QMenu(tr("&View"), this);
@@ -202,6 +250,8 @@ void ImageViewer::createMenus()
     scrollArea->addAction(fitToWindowAct);
     scrollArea->addAction(rotateClockWiseAct);
     scrollArea->addAction(rotateCounterClockWiseAct);
+    scrollArea->addAction(loadNextAct);
+    scrollArea->addAction(loadPrevAct);
 }
 
 void ImageViewer::scaleContent(double factor)

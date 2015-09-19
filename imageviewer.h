@@ -29,6 +29,9 @@ class ImageViewer : public QMainWindow
     void rotateClockWise();
     void rotateCounterClockWise();
 
+    void loadNext();
+    void loadPrev();
+
   private:
     void createActions();
     void createMenus();
@@ -47,13 +50,16 @@ class ImageViewer : public QMainWindow
     QAction *fitToWindowAct;
     QAction *rotateClockWiseAct;
     QAction *rotateCounterClockWiseAct;
+    QAction *loadNextAct;
+    QAction *loadPrevAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;
 
-    QDir _dir; // not sure how I'm supposed to do this
-    QSize _sizeOfGif; // since i don't know how to get a QMovie size i'll take it from a
-                      // frame
+    QStringList _otherPictures; // Filepaths of all the other pictures in the directory
+    QDir _dir;                  // not sure how I'm supposed to do this
+    QSize _sizeOfGif; // Don't know how to get a QMovie size so taken from first frame
+    int _indexOfCurrent;
 };
 
 #endif
