@@ -2,8 +2,10 @@
 #include <cstdio>
 #include <iostream>
 
+// TODO: set _indexOfCurrent
 // TODO: Fit window to picture
 // TODO: PNG transparency
+// TODO: "playlist" via ./imageviewer 1.png 2.png or from plain text
 // TODO: Preview images by holding shift
 // TODO: Change mappings for zoom to up/down and scroll to hjkl
 // TODO: speedup loading next/prev if possible and map to left/right and mous scroll

@@ -10,11 +10,11 @@ MAKEFILE      = Makefile
 
 ####### Compiler, tools and options
 
-CC            = clang
-CXX           = clang++
+CC            = gcc
+CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector-strong --param=ssp-buffer-size=4 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -O2 -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector-strong --param=ssp-buffer-size=4 -Wall -W -D_REENTRANT -fPIC $(DEFINES) -std=c++1y -stdlib=libc++
+CXXFLAGS      = -pipe -O2 -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector-strong --param=ssp-buffer-size=4 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -I. -I/usr/lib/qt/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt/bin/qmake
 DEL_FILE      = rm -f
@@ -33,12 +33,12 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = imageviewer1.0.0
-DISTDIR = /home/terry/Documents/cpp/qt/.tmp/imageviewer1.0.0
-LINK          = clang++
+DISTDIR = /home/terry/Documents/cpp/imageviewer-qt/.tmp/imageviewer1.0.0
+LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-O1,--sort-common,--as-needed,-z,relro
-LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread -std=c++1y -stdlib=libc++ -lc++abi
+LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
-RANLIB        =
+RANLIB        = 
 SED           = sed
 STRIP         = strip
 
@@ -255,7 +255,7 @@ first: all
 
 ####### Build rules
 
-$(TARGET):  $(OBJECTS)
+$(TARGET):  $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: imageviewer.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/lib/qt/mkspecs/features/spec_pre.prf \
@@ -631,13 +631,13 @@ distdir: FORCE
 	$(COPY_FILE) --parents imageviewer.cpp main.cpp $(DISTDIR)/
 
 
-clean: compiler_clean
+clean: compiler_clean 
 	-$(DEL_FILE) $(OBJECTS)
 	-$(DEL_FILE) *~ core *.core
 
 
-distclean: clean
-	-$(DEL_FILE) $(TARGET)
+distclean: clean 
+	-$(DEL_FILE) $(TARGET) 
 	-$(DEL_FILE) Makefile
 
 
@@ -655,7 +655,7 @@ compiler_moc_header_make_all: moc_imageviewer.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_imageviewer.cpp
 moc_imageviewer.cpp: imageviewer.h
-	/usr/lib/qt/bin/moc $(DEFINES) -I/usr/lib/qt/mkspecs/linux-g++ -I/home/terry/Documents/cpp/qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/5.2.0 -I/usr/include/c++/5.2.0/x86_64-unknown-linux-gnu -I/usr/include/c++/5.2.0/backward -I/usr/lib/gcc/x86_64-unknown-linux-gnu/5.2.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-unknown-linux-gnu/5.2.0/include-fixed -I/usr/include imageviewer.h -o moc_imageviewer.cpp
+	/usr/lib/qt/bin/moc $(DEFINES) -I/usr/lib/qt/mkspecs/linux-g++ -I/home/terry/Documents/cpp/imageviewer-qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/5.2.0 -I/usr/include/c++/5.2.0/x86_64-unknown-linux-gnu -I/usr/include/c++/5.2.0/backward -I/usr/lib/gcc/x86_64-unknown-linux-gnu/5.2.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-unknown-linux-gnu/5.2.0/include-fixed -I/usr/include imageviewer.h -o moc_imageviewer.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -667,7 +667,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_header_clean
+compiler_clean: compiler_moc_header_clean 
 
 ####### Compile
 
@@ -677,7 +677,7 @@ imageviewer.o: imageviewer.cpp imageviewer.h
 main.o: main.cpp imageviewer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
-moc_imageviewer.o: moc_imageviewer.cpp
+moc_imageviewer.o: moc_imageviewer.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_imageviewer.o moc_imageviewer.cpp
 
 ####### Install
@@ -689,7 +689,7 @@ install_target: first FORCE
 
 uninstall_target: FORCE
 	-$(DEL_FILE) $(INSTALL_ROOT)/usr/share/doc/qt/examples/widgets/widgets/imageviewer/$(QMAKE_TARGET)
-	-$(DEL_DIR) $(INSTALL_ROOT)/usr/share/doc/qt/examples/widgets/widgets/imageviewer/
+	-$(DEL_DIR) $(INSTALL_ROOT)/usr/share/doc/qt/examples/widgets/widgets/imageviewer/ 
 
 
 install: install_target  FORCE
