@@ -31,6 +31,9 @@ ImageViewer::ImageViewer()
     createActions();
     createMenus();
 
+    _screenWidth = QGuiApplication::primaryScreen()->availableSize().width();
+    _screenHeight = QGuiApplication::primaryScreen()->availableSize().height();
+
     _indexOfCurrent = 0;
 
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
@@ -68,11 +71,7 @@ bool ImageViewer::loadFile(const QString &fileName)
         rotateCounterClockWiseAct->setEnabled(true);
     }
 
-    normalSize();
-    if (imageLabel->size().width() > 1920)
-    {
-        fitToWindow();
-    }
+    fitToImage();
 
     setWindowFilePath(fileName);
 
@@ -121,6 +120,26 @@ void ImageViewer::fitToWindow()
 {
     normalSize();
     imageLabel->resize(this->size());
+}
+
+void ImageViewer::fitToImage()
+{
+    int width = imageLabel->pixmap()->width();
+    int height = imageLabel->pixmap()->height();
+
+    if (width > _screenWidth)
+    {
+        width = _screenWidth;
+    }
+    if (height > _screenHeight)
+    {
+        height = _screenHeight;
+    }
+
+    this->resize(width, height);
+    imageLabel->resize(this->size());
+
+    std::cout << width << " " << height << std::endl;
 }
 
 void ImageViewer::rotateClockWise()
@@ -198,6 +217,11 @@ void ImageViewer::createActions()
     fitToWindowAct->setShortcut(tr("f"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
 
+    fitToImageAct = new QAction(tr("Fit to Image"), this);
+    fitToImageAct->setEnabled(true);
+    fitToImageAct->setShortcut(tr("Shift+f"));
+    connect(fitToImageAct, SIGNAL(triggered()), this, SLOT(fitToImage()));
+
     rotateClockWiseAct = new QAction(tr("Rotate Clock Wise"), this);
     rotateClockWiseAct->setShortcut(tr("r"));
     connect(rotateClockWiseAct, SIGNAL(triggered()), this, SLOT(rotateClockWise()));
@@ -229,6 +253,7 @@ void ImageViewer::createMenus()
     viewMenu->addAction(zoomOutAct);
     viewMenu->addAction(normalSizeAct);
     viewMenu->addAction(fitToWindowAct);
+    viewMenu->addAction(fitToImageAct);
     viewMenu->addSeparator();
     viewMenu->addAction(rotateClockWiseAct);
     viewMenu->addAction(rotateCounterClockWiseAct);
@@ -242,6 +267,7 @@ void ImageViewer::createMenus()
     scrollArea->addAction(zoomOutAct);
     scrollArea->addAction(normalSizeAct);
     scrollArea->addAction(fitToWindowAct);
+    scrollArea->addAction(fitToImageAct);
     scrollArea->addAction(rotateClockWiseAct);
     scrollArea->addAction(rotateCounterClockWiseAct);
     scrollArea->addAction(loadNextAct);

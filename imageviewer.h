@@ -25,6 +25,7 @@ class ImageViewer : public QMainWindow
     void zoomOut();
     void normalSize();
     void fitToWindow();
+    void fitToImage();
 
     void rotateClockWise();
     void rotateCounterClockWise();
@@ -48,6 +49,7 @@ class ImageViewer : public QMainWindow
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
+    QAction *fitToImageAct;
     QAction *rotateClockWiseAct;
     QAction *rotateCounterClockWiseAct;
     QAction *loadNextAct;
@@ -60,6 +62,8 @@ class ImageViewer : public QMainWindow
     QDir _dir;                  // not sure how I'm supposed to do this
     QSize _sizeOfGif; // Don't know how to get a QMovie size so taken from first frame
     int _indexOfCurrent;
+    int _screenWidth;
+    int _screenHeight;
 };
 
 #endif
