@@ -34,7 +34,7 @@ ImageViewer::ImageViewer()
     _screenWidth = QGuiApplication::primaryScreen()->availableSize().width();
     _screenHeight = QGuiApplication::primaryScreen()->availableSize().height();
 
-    _indexOfCurrent = 0;
+    _indexOfCurrent = -1; // Not yet at any image
 
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 }
@@ -42,6 +42,10 @@ ImageViewer::ImageViewer()
 bool ImageViewer::loadFile(const QString &fileName)
 {
     QImage image(fileName);
+
+    _fileName = fileName;
+    std::cout << _fileName.toStdString() << std::endl;
+
     if (image.isNull())
     {
         QMessageBox::information(
@@ -75,11 +79,22 @@ bool ImageViewer::loadFile(const QString &fileName)
 
     setWindowFilePath(fileName);
 
+    // Populates _otherPictures with images in new path
     if (QDir::currentPath() != _dir.currentPath() || _otherPictures.isEmpty())
     {
         _dir.cd(fileName.left(fileName.lastIndexOf("/") + 1));
         std::cout << "New Directory" << std::endl;
         _otherPictures = _dir.entryList();
+
+        _indexOfCurrent = getFileIndex();
+        std::cout << "set index: ";
+        std::cout << _indexOfCurrent << std::endl;
+    }
+    else if (_indexOfCurrent != -1)
+    {
+        _indexOfCurrent = getFileIndex();
+        std::cout << "set index: ";
+        std::cout << _indexOfCurrent << std::endl;
     }
 
     return true;
@@ -104,6 +119,22 @@ void ImageViewer::open()
            !loadFile(dialog.selectedFiles().first()))
     {
     }
+}
+
+int ImageViewer::getFileIndex()
+{
+    int index = 0;
+    for (int i = 0; i < _otherPictures.size(); i++)
+    {
+        if (_dir.absoluteFilePath(_otherPictures[i]) == _fileName)
+        {
+            index = i;
+            std::cout << "New Index" << std::endl;
+            break;
+        }
+    }
+
+    return index;
 }
 
 void ImageViewer::zoomIn() { scaleContent(1.05); }
@@ -136,7 +167,7 @@ void ImageViewer::fitToImage()
         height = _screenHeight;
     }
 
-    this->resize(width, height);
+    this->resize(width * 9 / 10, height * 9 / 10);
     imageLabel->resize(this->size());
 
     std::cout << width << " " << height << std::endl;
@@ -165,7 +196,11 @@ void ImageViewer::rotateCounterClockWise()
 
 void ImageViewer::loadNext()
 {
-    if (++_indexOfCurrent >= _otherPictures.size())
+    if (_otherPictures.size() == 0)
+    {
+        return;
+    }
+    else if (++_indexOfCurrent >= _otherPictures.size())
     {
         _indexOfCurrent = 0;
     }
@@ -179,7 +214,11 @@ void ImageViewer::loadNext()
 
 void ImageViewer::loadPrev()
 {
-    if (--_indexOfCurrent < 0)
+    if (_otherPictures.size() == 0)
+    {
+        return;
+    }
+    else if (--_indexOfCurrent < 0)
     {
         _indexOfCurrent = _otherPictures.size() - 1;
     }

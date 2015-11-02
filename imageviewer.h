@@ -39,6 +39,8 @@ class ImageViewer : public QMainWindow
     void scaleContent(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
+    int getFileIndex();
+
     QLabel *imageLabel;
     QScrollArea *scrollArea;
     double scaleFactor;
@@ -60,7 +62,8 @@ class ImageViewer : public QMainWindow
 
     QStringList _otherPictures; // Filepaths of all the other pictures in the directory
     QDir _dir;                  // not sure how I'm supposed to do this
-    QSize _sizeOfGif; // Don't know how to get a QMovie size so taken from first frame
+    QSize _sizeOfGif;  // Don't know how to get a QMovie size so taken from first frame
+    QString _fileName; // Directory of current image
     int _indexOfCurrent;
     int _screenWidth;
     int _screenHeight;
