@@ -1,4 +1,3 @@
-TODO: set _indexOfCurrent
 TODO: PNG transparency
 TODO: "playlist" via ./imageviewer 1.png 2.png or from plain text
 TODO: Preview images by holding shift
