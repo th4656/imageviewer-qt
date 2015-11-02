@@ -90,7 +90,7 @@ bool ImageViewer::loadFile(const QString &fileName)
         std::cout << "set index: ";
         std::cout << _indexOfCurrent << std::endl;
     }
-    else if (_indexOfCurrent != -1)
+    else if (_indexOfCurrent == -1)
     {
         _indexOfCurrent = getFileIndex();
         std::cout << "set index: ";
