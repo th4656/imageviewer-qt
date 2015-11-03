@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     imageViewer.setAttribute(Qt::WA_NoSystemBackground, true);
     // imageViewer.setStyleSheet("background:transparent;");
     imageViewer.setAttribute(Qt::WA_TranslucentBackground, true);
+    imageViewer.setAttribute(Qt::WA_PaintOnScreen);
 
     imageViewer.show();
     return app.exec();
