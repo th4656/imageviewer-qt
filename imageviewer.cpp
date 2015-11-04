@@ -11,6 +11,8 @@ ImageViewer::ImageViewer()
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
 
+    imageLabel->setAttribute(Qt::WA_TranslucentBackground, true);
+
     scrollArea = new QScrollArea;
     scrollArea->setBackgroundRole(QPalette::Background);
     scrollArea->setWidget(imageLabel);
@@ -18,6 +20,9 @@ ImageViewer::ImageViewer()
     scrollArea->horizontalScrollBar()->setFocusPolicy(Qt::ClickFocus);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    scrollArea->setAttribute(Qt::WA_TranslucentBackground, true);
+
     setCentralWidget(scrollArea);
 
     QStringList filter;
@@ -151,26 +156,34 @@ void ImageViewer::fitToWindow()
 {
     normalSize();
     imageLabel->resize(this->size());
+    scaleFactor = this->size().height() / imageLabel->size().height();
 }
 
+// TODO: Don't ruin aspect ratio
 void ImageViewer::fitToImage()
 {
     int width = imageLabel->pixmap()->width();
     int height = imageLabel->pixmap()->height();
 
-    if (width > _screenWidth)
+    if (width >= _screenWidth)
     {
-        width = _screenWidth;
+        double newWidth = _screenWidth * 9 / 10;
+        double ratio = newWidth / width;
+
+        height = height * ratio; // resize while keeping ratio
+        width = newWidth;
     }
-    if (height > _screenHeight)
+    else if (height >= _screenHeight)
     {
-        height = _screenHeight;
+        double newHeight = _screenHeight * 9 / 10;
+        double ratio = newHeight / height;
+
+        width = width * ratio; // same as width but other way around
+        height = newHeight;
     }
 
-    this->resize(width * 9 / 10, height * 9 / 10);
+    this->resize(width, height);
     imageLabel->resize(this->size());
-
-    std::cout << width << " " << height << std::endl;
 }
 
 void ImageViewer::rotateClockWise()
@@ -299,6 +312,8 @@ void ImageViewer::createMenus()
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(viewMenu);
+
+    menuBar()->hide();	//TODO: Change this to a toggle
 
     scrollArea->addAction(openAct);
     scrollArea->addAction(exitAct);

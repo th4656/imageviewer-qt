@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
                                             ImageViewer::tr("Image file to open."));
     commandLineParser.process(QCoreApplication::arguments());
     ImageViewer imageViewer;
+	imageViewer.resize(150,150);
+
     if (!commandLineParser.positionalArguments().isEmpty() &&
         !imageViewer.loadFile(commandLineParser.positionalArguments().front()))
     {
@@ -20,10 +22,9 @@ int main(int argc, char *argv[])
     }
 
     imageViewer.setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
-    imageViewer.setAttribute(Qt::WA_NoSystemBackground, true);
-    // imageViewer.setStyleSheet("background:transparent;");
+    // imageViewer.setAttribute(Qt::WA_NoSystemBackground, true);
+    imageViewer.setStyleSheet("background:transparent;");
     imageViewer.setAttribute(Qt::WA_TranslucentBackground, true);
-    imageViewer.setAttribute(Qt::WA_PaintOnScreen);
 
     imageViewer.show();
     return app.exec();
