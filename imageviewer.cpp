@@ -154,12 +154,12 @@ void ImageViewer::normalSize()
 
 void ImageViewer::fitToWindow()
 {
-    normalSize();
+    // scaleFactor = (double)this->size().height() / imageLabel->size().height();
+    scaleFactor = 1.0;
     imageLabel->resize(this->size());
-    scaleFactor = this->size().height() / imageLabel->size().height();
 }
 
-// TODO: Don't ruin aspect ratio
+// TODO: correctly change scaelFactor
 void ImageViewer::fitToImage()
 {
     int width = imageLabel->pixmap()->width();
@@ -182,8 +182,29 @@ void ImageViewer::fitToImage()
         height = newHeight;
     }
 
+    // scaleFactor = height/ imageLabel->pixmap()->height();
+    scaleFactor = 1.0;
+
     this->resize(width, height);
     imageLabel->resize(this->size());
+}
+
+void ImageViewer::scaleContent(double factor)
+{
+    if (imageLabel->movie() != nullptr)
+    {
+        Q_ASSERT(imageLabel->movie());
+        scaleFactor *= factor;
+        imageLabel->resize(scaleFactor * imageLabel->movie()->scaledSize());
+    }
+    else if (imageLabel->pixmap() != nullptr)
+    {
+        Q_ASSERT(imageLabel->pixmap());
+        scaleFactor *= factor;
+        imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
+    }
+    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
+    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
 }
 
 void ImageViewer::rotateClockWise()
@@ -237,6 +258,12 @@ void ImageViewer::loadPrev()
     }
 
     loadFile(_dir.absoluteFilePath(_otherPictures[_indexOfCurrent]));
+}
+
+void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
+{
+    scrollBar->setValue(
+        int(factor * scrollBar->value() + ((factor - 1) * scrollBar->pageStep() / 2)));
 }
 
 void ImageViewer::createActions()
@@ -313,7 +340,7 @@ void ImageViewer::createMenus()
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(viewMenu);
 
-    menuBar()->hide();	//TODO: Change this to a toggle
+    menuBar()->hide(); // TODO: Change this to a toggle
 
     scrollArea->addAction(openAct);
     scrollArea->addAction(exitAct);
@@ -326,28 +353,4 @@ void ImageViewer::createMenus()
     scrollArea->addAction(rotateCounterClockWiseAct);
     scrollArea->addAction(loadNextAct);
     scrollArea->addAction(loadPrevAct);
-}
-
-void ImageViewer::scaleContent(double factor)
-{
-    if (imageLabel->movie() != nullptr)
-    {
-        Q_ASSERT(imageLabel->movie());
-        scaleFactor *= factor;
-        imageLabel->resize(scaleFactor * imageLabel->movie()->scaledSize());
-    }
-    else if (imageLabel->pixmap() != nullptr)
-    {
-        Q_ASSERT(imageLabel->pixmap());
-        scaleFactor *= factor;
-        imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-    }
-    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
-}
-
-void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
-{
-    scrollBar->setValue(
-        int(factor * scrollBar->value() + ((factor - 1) * scrollBar->pageStep() / 2)));
 }
