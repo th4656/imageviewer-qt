@@ -81,6 +81,7 @@ bool ImageViewer::loadFile(const QString &fileName)
     }
 
     fitToImage();
+    std::cout << "fine" << std::endl;
 
     setWindowFilePath(fileName);
 
@@ -159,11 +160,24 @@ void ImageViewer::fitToWindow()
     imageLabel->resize(this->size());
 }
 
-// TODO: correctly change scaelFactor
+// TODO: scale correctly
 void ImageViewer::fitToImage()
 {
-    int width = imageLabel->pixmap()->width();
-    int height = imageLabel->pixmap()->height();
+    int width = 0;
+    int height = 0;
+
+    if (imageLabel->movie() != nullptr)
+    {
+        Q_ASSERT(imageLabel->movie());
+        width = imageLabel->movie()->scaledSize().width();
+        height = imageLabel->movie()->scaledSize().height();
+    }
+    else if (imageLabel->pixmap() != nullptr)
+    {
+        Q_ASSERT(imageLabel->pixmap());
+        width = imageLabel->pixmap()->width();
+        height = imageLabel->pixmap()->height();
+    }
 
     if (width >= _screenWidth)
     {
@@ -191,18 +205,19 @@ void ImageViewer::fitToImage()
 
 void ImageViewer::scaleContent(double factor)
 {
-    if (imageLabel->movie() != nullptr)
-    {
-        Q_ASSERT(imageLabel->movie());
-        scaleFactor *= factor;
-        imageLabel->resize(scaleFactor * imageLabel->movie()->scaledSize());
-    }
-    else if (imageLabel->pixmap() != nullptr)
-    {
-        Q_ASSERT(imageLabel->pixmap());
-        scaleFactor *= factor;
-        imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-    }
+    // if (imageLabel->movie() != nullptr)
+    // {
+    //     Q_ASSERT(imageLabel->movie());
+    //     scaleFactor *= factor;
+    //     imageLabel->resize(scaleFactor * imageLabel->movie()->scaledSize());
+    // }
+    // else if (imageLabel->pixmap() != nullptr)
+    // {
+    //     Q_ASSERT(imageLabel->pixmap());
+    //     scaleFactor *= factor;
+    //     imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
+    // }
+    imageLabel->resize(factor * imageLabel->size());
     adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
     adjustScrollBar(scrollArea->verticalScrollBar(), factor);
 }
