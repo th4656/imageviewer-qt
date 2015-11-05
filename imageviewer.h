@@ -43,7 +43,6 @@ class ImageViewer : public QMainWindow
 
     QLabel *imageLabel;
     QScrollArea *scrollArea;
-    double scaleFactor;
 
     QAction *openAct;
     QAction *exitAct;

@@ -81,7 +81,6 @@ bool ImageViewer::loadFile(const QString &fileName)
     }
 
     fitToImage();
-    std::cout << "fine" << std::endl;
 
     setWindowFilePath(fileName);
 
@@ -130,6 +129,7 @@ void ImageViewer::open()
 int ImageViewer::getFileIndex()
 {
     int index = 0;
+
     for (int i = 0; i < _otherPictures.size(); i++)
     {
         if (_dir.absoluteFilePath(_otherPictures[i]) == _fileName)
@@ -150,13 +150,10 @@ void ImageViewer::zoomOut() { scaleContent(0.95); }
 void ImageViewer::normalSize()
 {
     imageLabel->adjustSize();
-    scaleFactor = 1.0;
 }
 
 void ImageViewer::fitToWindow()
 {
-    // scaleFactor = (double)this->size().height() / imageLabel->size().height();
-    scaleFactor = 1.0;
     imageLabel->resize(this->size());
 }
 
@@ -195,9 +192,6 @@ void ImageViewer::fitToImage()
         width = width * ratio; // same as width but other way around
         height = newHeight;
     }
-
-    // scaleFactor = height/ imageLabel->pixmap()->height();
-    scaleFactor = 1.0;
 
     this->resize(width, height);
     imageLabel->resize(this->size());
