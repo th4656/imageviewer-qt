@@ -22,6 +22,7 @@ ImageViewer::ImageViewer()
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     scrollArea->setAttribute(Qt::WA_TranslucentBackground, true);
+    scrollArea->setStyleSheet("border: 0px;");
 
     setCentralWidget(scrollArea);
 
@@ -147,15 +148,9 @@ void ImageViewer::zoomIn() { scaleContent(1.05); }
 
 void ImageViewer::zoomOut() { scaleContent(0.95); }
 
-void ImageViewer::normalSize()
-{
-    imageLabel->adjustSize();
-}
+void ImageViewer::normalSize() { imageLabel->adjustSize(); }
 
-void ImageViewer::fitToWindow()
-{
-    imageLabel->resize(this->size());
-}
+void ImageViewer::fitToWindow() { imageLabel->resize(this->size()); }
 
 // TODO: scale correctly
 void ImageViewer::fitToImage()
