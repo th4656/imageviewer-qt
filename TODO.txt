@@ -2,6 +2,8 @@ TODO: Gallery view
 TODO: "playlist" via ./imageviewer 1.png 2.png or from plain text
 TODO: Change mappings for zoom to up/down and scroll to hjkl
 TODO: speedup loading next/prev if possible and map to left/right and mous scroll
+TODO: tag system
+TODO: search current directory and tags with /
 
 FIX: Rotate decreases size
 Fix: Scaling and limit max/min size

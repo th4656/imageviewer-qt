@@ -9,6 +9,9 @@ HEADERS       = imageviewer.h
 SOURCES       = imageviewer.cpp \
                 main.cpp
 
+target.path = /usr/bin
+INSTALLS += target
+
 wince*: {
    DEPLOYMENT_PLUGIN += qjpeg qgif
 }
