@@ -159,7 +159,23 @@ void ImageViewer::normalSize()
 
 void ImageViewer::fitToWindow()
 {
-    imageLabel->resize(this->size());
+	QSize pic;
+	QSize win = this->size();
+
+    if (imageLabel->movie() != nullptr)
+    {
+        Q_ASSERT(imageLabel->movie());
+        pic = imageLabel->movie()->scaledSize();
+    }
+    else if (imageLabel->pixmap() != nullptr)
+    {
+        Q_ASSERT(imageLabel->pixmap());
+        pic = imageLabel->pixmap()->size();
+
+    }
+
+	pic.scale(win.width(),win.height(),Qt::KeepAspectRatio);
+	imageLabel->resize(pic);
 }
 
 // TODO: scale correctly
@@ -181,22 +197,6 @@ void ImageViewer::fitToImage()
         height = imageLabel->pixmap()->height();
     }
 
-    if (width >= _screenWidth)
-    {
-        double newWidth = _screenWidth * 9 / 10;
-        double ratio = newWidth / width;
-
-        height = height * ratio; // resize while keeping ratio
-        width = newWidth;
-    }
-    else if (height >= _screenHeight)
-    {
-        double newHeight = _screenHeight * 9 / 10;
-        double ratio = newHeight / height;
-
-        width = width * ratio; // same as width but other way around
-        height = newHeight;
-    }
 
     this->resize(width, height);
     imageLabel->resize(this->size());
