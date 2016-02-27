@@ -7,21 +7,19 @@
 ImageViewer::ImageViewer()
 {
     imageLabel = new QLabel;
-    imageLabel->setBackgroundRole(QPalette::Background);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
 
-    imageLabel->setAttribute(Qt::WA_TranslucentBackground, true);
+    imageLabel->setBackgroundRole(QPalette::Background);
 
     scrollArea = new QScrollArea;
-    scrollArea->setBackgroundRole(QPalette::Background);
     scrollArea->setWidget(imageLabel);
     scrollArea->verticalScrollBar()->setFocusPolicy(Qt::ClickFocus);
     scrollArea->horizontalScrollBar()->setFocusPolicy(Qt::ClickFocus);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    scrollArea->setAttribute(Qt::WA_TranslucentBackground, true);
+    scrollArea->setBackgroundRole(QPalette::Background);
     scrollArea->setStyleSheet("border: 0px;");
 
     setCentralWidget(scrollArea);
@@ -144,13 +142,25 @@ int ImageViewer::getFileIndex()
     return index;
 }
 
-void ImageViewer::zoomIn() { scaleContent(1.05); }
+void ImageViewer::zoomIn()
+{
+    scaleContent(1.05);
+}
 
-void ImageViewer::zoomOut() { scaleContent(0.95); }
+void ImageViewer::zoomOut()
+{
+    scaleContent(0.95);
+}
 
-void ImageViewer::normalSize() { imageLabel->adjustSize(); }
+void ImageViewer::normalSize()
+{
+    imageLabel->adjustSize();
+}
 
-void ImageViewer::fitToWindow() { imageLabel->resize(this->size()); }
+void ImageViewer::fitToWindow()
+{
+    imageLabel->resize(this->size());
+}
 
 // TODO: scale correctly
 void ImageViewer::fitToImage()
@@ -194,18 +204,6 @@ void ImageViewer::fitToImage()
 
 void ImageViewer::scaleContent(double factor)
 {
-    // if (imageLabel->movie() != nullptr)
-    // {
-    //     Q_ASSERT(imageLabel->movie());
-    //     scaleFactor *= factor;
-    //     imageLabel->resize(scaleFactor * imageLabel->movie()->scaledSize());
-    // }
-    // else if (imageLabel->pixmap() != nullptr)
-    // {
-    //     Q_ASSERT(imageLabel->pixmap());
-    //     scaleFactor *= factor;
-    //     imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-    // }
     imageLabel->resize(factor * imageLabel->size());
     adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
     adjustScrollBar(scrollArea->verticalScrollBar(), factor);
@@ -216,8 +214,8 @@ void ImageViewer::rotateClockWise()
     if (imageLabel->pixmap() != nullptr)
     {
         imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(90)));
-        zoomIn();  // Image dimensions get messed up when rotating
-        zoomOut(); // I should probably find a better solution
+		imageLabel->resize(imageLabel->height(),imageLabel->width());	
+		this->resize(this->height(),this->width());
     }
 }
 
@@ -227,39 +225,27 @@ void ImageViewer::rotateCounterClockWise()
     {
         imageLabel->setPixmap(
             imageLabel->pixmap()->transformed(QTransform().rotate(-90)));
-        zoomIn();  // Image dimensions get messed up when rotating
-        zoomOut(); // I should probably find a better solution
+		imageLabel->resize(imageLabel->height(),imageLabel->width());	
+		this->resize(this->height(),this->width());
     }
 }
 
 void ImageViewer::loadNext()
 {
     if (_otherPictures.size() == 0)
-    {
         return;
-    }
     else if (++_indexOfCurrent >= _otherPictures.size())
-    {
         _indexOfCurrent = 0;
-    }
 
-    // for (auto i : _otherPictures)
-    // {
-    //     std::cout << i.toStdString() << std::endl;
-    // }
     loadFile(_dir.absoluteFilePath(_otherPictures[_indexOfCurrent]));
 }
 
 void ImageViewer::loadPrev()
 {
     if (_otherPictures.size() == 0)
-    {
         return;
-    }
     else if (--_indexOfCurrent < 0)
-    {
         _indexOfCurrent = _otherPictures.size() - 1;
-    }
 
     loadFile(_dir.absoluteFilePath(_otherPictures[_indexOfCurrent]));
 }

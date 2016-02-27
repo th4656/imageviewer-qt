@@ -24,6 +24,8 @@ int main(int argc, char *argv[])
     }
 
     imageViewer.setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
+
+	//both needed for transparency
     imageViewer.setStyleSheet("background:transparent;");
     imageViewer.setAttribute(Qt::WA_TranslucentBackground, true);
 
