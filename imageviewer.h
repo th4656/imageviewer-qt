@@ -26,6 +26,7 @@ class ImageViewer : public QMainWindow
     void normalSize();
     void fitToWindow();
     void fitToImage();
+	void fitToScreen();
 
     void rotateClockWise();
     void rotateCounterClockWise();

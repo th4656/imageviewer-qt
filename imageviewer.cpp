@@ -80,6 +80,7 @@ bool ImageViewer::loadFile(const QString &fileName)
     }
 
     fitToImage();
+    fitToScreen();
 
     setWindowFilePath(fileName);
 
@@ -142,43 +143,32 @@ int ImageViewer::getFileIndex()
     return index;
 }
 
-void ImageViewer::zoomIn()
-{
-    scaleContent(1.05);
-}
+void ImageViewer::zoomIn() { scaleContent(1.05); }
 
-void ImageViewer::zoomOut()
-{
-    scaleContent(0.95);
-}
+void ImageViewer::zoomOut() { scaleContent(0.95); }
 
-void ImageViewer::normalSize()
-{
-    imageLabel->adjustSize();
-}
+void ImageViewer::normalSize() { imageLabel->adjustSize(); }
 
 void ImageViewer::fitToWindow()
 {
-	QSize pic;
-	QSize win = this->size();
+    QSize imgSize;
+    QSize win = this->size();
 
     if (imageLabel->movie() != nullptr)
     {
         Q_ASSERT(imageLabel->movie());
-        pic = imageLabel->movie()->scaledSize();
+        imgSize = imageLabel->movie()->scaledSize();
     }
     else if (imageLabel->pixmap() != nullptr)
     {
         Q_ASSERT(imageLabel->pixmap());
-        pic = imageLabel->pixmap()->size();
-
+        imgSize = imageLabel->pixmap()->size();
     }
 
-	pic.scale(win.width(),win.height(),Qt::KeepAspectRatio);
-	imageLabel->resize(pic);
+    imgSize.scale(win, Qt::KeepAspectRatio);
+    imageLabel->resize(imgSize);
 }
 
-// TODO: scale correctly
 void ImageViewer::fitToImage()
 {
     int width = 0;
@@ -197,9 +187,20 @@ void ImageViewer::fitToImage()
         height = imageLabel->pixmap()->height();
     }
 
-
     this->resize(width, height);
     imageLabel->resize(this->size());
+}
+
+void ImageViewer::fitToScreen()
+{
+    int width = this->width();
+    int height = this->height();
+    if (width > _screenWidth)
+        width = _screenWidth;
+    if (height > _screenHeight)
+        height = _screenHeight;
+
+    this->resize(width, height);
 }
 
 void ImageViewer::scaleContent(double factor)
@@ -214,8 +215,8 @@ void ImageViewer::rotateClockWise()
     if (imageLabel->pixmap() != nullptr)
     {
         imageLabel->setPixmap(imageLabel->pixmap()->transformed(QTransform().rotate(90)));
-		imageLabel->resize(imageLabel->height(),imageLabel->width());	
-		this->resize(this->height(),this->width());
+        imageLabel->resize(imageLabel->height(), imageLabel->width());
+        this->resize(this->height(), this->width());
     }
 }
 
@@ -225,8 +226,8 @@ void ImageViewer::rotateCounterClockWise()
     {
         imageLabel->setPixmap(
             imageLabel->pixmap()->transformed(QTransform().rotate(-90)));
-		imageLabel->resize(imageLabel->height(),imageLabel->width());	
-		this->resize(this->height(),this->width());
+        imageLabel->resize(imageLabel->height(), imageLabel->width());
+        this->resize(this->height(), this->width());
     }
 }
 
