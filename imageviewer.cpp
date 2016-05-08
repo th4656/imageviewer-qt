@@ -10,8 +10,6 @@ ImageViewer::ImageViewer()
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
 
-    imageLabel->setBackgroundRole(QPalette::Background);
-
     scrollArea = new QScrollArea;
     scrollArea->setWidget(imageLabel);
     scrollArea->verticalScrollBar()->setFocusPolicy(Qt::ClickFocus);
@@ -47,9 +45,6 @@ bool ImageViewer::loadFile(const QString &fileName)
 {
     QImage image(fileName);
 
-    _fileName = fileName;
-    std::cout << _fileName.toStdString() << std::endl;
-
     if (image.isNull())
     {
         QMessageBox::information(
@@ -60,6 +55,9 @@ bool ImageViewer::loadFile(const QString &fileName)
         imageLabel->adjustSize();
         return false;
     }
+
+    _fileName = fileName;
+    std::cout << _fileName.toStdString() << std::endl;
 
     if (QMimeDatabase().mimeTypeForFile(fileName).name().toStdString() == "image/gif")
     {
@@ -90,17 +88,9 @@ bool ImageViewer::loadFile(const QString &fileName)
         _dir.cd(fileName.left(fileName.lastIndexOf("/") + 1));
         std::cout << "New Directory" << std::endl;
         _otherPictures = _dir.entryList();
-
-        _indexOfCurrent = getFileIndex();
-        std::cout << "set index: ";
-        std::cout << _indexOfCurrent << std::endl;
     }
-    else if (_indexOfCurrent == -1)
-    {
-        _indexOfCurrent = getFileIndex();
-        std::cout << "set index: ";
-        std::cout << _indexOfCurrent << std::endl;
-    }
+	_indexOfCurrent = getFileIndex();
+	std::cout << "set index: " << _indexOfCurrent << std::endl;
 
     return true;
 }
@@ -112,8 +102,6 @@ void ImageViewer::open()
         mimeTypeFilters.append(mimeTypeName);
     mimeTypeFilters.sort();
 
-    const QStringList homeLocations =
-        QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
     QFileDialog dialog(this, tr("Open File"), _dir.path());
 
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -128,19 +116,15 @@ void ImageViewer::open()
 
 int ImageViewer::getFileIndex()
 {
-    int index = 0;
-
     for (int i = 0; i < _otherPictures.size(); i++)
     {
         if (_dir.absoluteFilePath(_otherPictures[i]) == _fileName)
         {
-            index = i;
-            std::cout << "New Index" << std::endl;
-            break;
+			return i;
         }
     }
 
-    return index;
+    return -1;
 }
 
 void ImageViewer::zoomIn()
@@ -161,7 +145,6 @@ void ImageViewer::normalSize()
 void ImageViewer::fitToWindow()
 {
     QSize imgSize;
-    QSize win = this->size();
 
     if (imageLabel->movie() != nullptr)
     {
@@ -174,7 +157,7 @@ void ImageViewer::fitToWindow()
         imgSize = imageLabel->pixmap()->size();
     }
 
-    imgSize.scale(win, Qt::KeepAspectRatio);
+    imgSize.scale(this->size(), Qt::KeepAspectRatio);
     imageLabel->resize(imgSize);
 	this->resize(imgSize);
 }
@@ -203,10 +186,8 @@ void ImageViewer::fitToImage()
 
 void ImageViewer::fitToScreen()
 {
-    int width = this->width();
-    int height = this->height();
-    if (width > _screenWidth) width = _screenWidth;
-    if (height > _screenHeight) height = _screenHeight;
+    int width = qMin(this->width(), _screenWidth);
+    int height = qMin(this->height(), _screenHeight);
 
     this->resize(width, height);
 }
