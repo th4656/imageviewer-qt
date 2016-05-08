@@ -143,11 +143,20 @@ int ImageViewer::getFileIndex()
     return index;
 }
 
-void ImageViewer::zoomIn() { scaleContent(1.05); }
+void ImageViewer::zoomIn()
+{
+    scaleContent(1.05);
+}
 
-void ImageViewer::zoomOut() { scaleContent(0.95); }
+void ImageViewer::zoomOut()
+{
+    scaleContent(0.95);
+}
 
-void ImageViewer::normalSize() { imageLabel->adjustSize(); }
+void ImageViewer::normalSize()
+{
+    imageLabel->adjustSize();
+}
 
 void ImageViewer::fitToWindow()
 {
@@ -167,6 +176,7 @@ void ImageViewer::fitToWindow()
 
     imgSize.scale(win, Qt::KeepAspectRatio);
     imageLabel->resize(imgSize);
+	this->resize(imgSize);
 }
 
 void ImageViewer::fitToImage()
@@ -195,10 +205,8 @@ void ImageViewer::fitToScreen()
 {
     int width = this->width();
     int height = this->height();
-    if (width > _screenWidth)
-        width = _screenWidth;
-    if (height > _screenHeight)
-        height = _screenHeight;
+    if (width > _screenWidth) width = _screenWidth;
+    if (height > _screenHeight) height = _screenHeight;
 
     this->resize(width, height);
 }
@@ -328,11 +336,6 @@ void ImageViewer::createMenus()
     viewMenu->addAction(rotateClockWiseAct);
     viewMenu->addAction(rotateCounterClockWiseAct);
 
-    menuBar()->addMenu(fileMenu);
-    menuBar()->addMenu(viewMenu);
-
-    menuBar()->hide(); // TODO: Change this to a toggle
-
     scrollArea->addAction(openAct);
     scrollArea->addAction(exitAct);
     scrollArea->addAction(zoomInAct);
@@ -344,4 +347,14 @@ void ImageViewer::createMenus()
     scrollArea->addAction(rotateCounterClockWiseAct);
     scrollArea->addAction(loadNextAct);
     scrollArea->addAction(loadPrevAct);
+}
+
+void ImageViewer::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+    menu.addMenu(fileMenu);
+    menu.addMenu(viewMenu);
+    menu.addAction(openAct);
+    menu.addAction(exitAct);
+    menu.exec(event->globalPos());
 }

@@ -26,13 +26,16 @@ class ImageViewer : public QMainWindow
     void normalSize();
     void fitToWindow();
     void fitToImage();
-	void fitToScreen();
+    void fitToScreen();
 
     void rotateClockWise();
     void rotateCounterClockWise();
 
     void loadNext();
     void loadPrev();
+
+  protected:
+    void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 
   private:
     void createActions();
@@ -61,8 +64,8 @@ class ImageViewer : public QMainWindow
     QMenu *viewMenu;
 
     QStringList _otherPictures; // Filepaths of all the other pictures in the directory
-    QDir _dir;                  // not sure how I'm supposed to do this
-    QSize _sizeOfGif;  // Don't know how to get a QMovie size so taken from first frame
+    QDir _dir;
+    QSize _sizeOfGif;
     QString _fileName; // Directory of current image
     int _indexOfCurrent;
     int _screenWidth;
